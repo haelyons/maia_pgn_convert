@@ -2,7 +2,7 @@
 
 This is a disconnected fork of nas5w's [pgn-converter](https://github.com/nas5w/pgn-converter). I decided not to open a pull request
 as the intent here is specifically to convert between Chess.com PGNs and the LichessDB format (a subset of the standard Lichess format)
-in order to use Chess.com games as training data to fine-tune the [maia-individual model](https://github.com/CSSLab/maia-individual)
+in order to use Chess.com games as training data to fine-tune the [maia-individual model](https://github.com/CSSLab/maia-individual).
 
 ## Installation
 
