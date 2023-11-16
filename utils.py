@@ -48,6 +48,53 @@ def convert_chessbase_to_lichess(file_path):
 
     return "\n\n".join(file_parts)
 
+def convert_chesscom_to_lichess(file_path):
+    with open(file_path, encoding="utf8") as f:
+        file = f.read()
+
+    # Global field deletions: Date, Round, CurrentPosition, Timezone, StartTime, EndTime, EndDate, Link
+    file = re.sub("\[Date.*\\n?", "", file)
+    file = re.sub("\[Round.*\\n?", "", file)
+    file = re.sub("\[CurrentPosition.*\\n?", "", file)
+    file = re.sub("\[Timezone.*\\n?", "", file)
+    file = re.sub("\[StartTime.*\\n?", "", file)
+    file = re.sub("\[EndTime.*\\n?", "", file)
+    file = re.sub("\[EndDate.*\\n?", "", file)
+    file = re.sub("\[Link.*\\n?", "", file) 
+
+    # Chess.com uses double line-breaks, Lichess DB has single
+    file_parts = file.split("\n\n")
+    print("Converting: ", len(file_parts), " chess games...")
+
+    # Replace ECOUrl with "Opening" field extracted from ECOUrl
+    i = 0
+    max_games = len(file_parts)
+    max_games = 1000
+    while i < 1000:
+        try:
+            eco_pattern = r'\[ECOUrl "(.*?)"'
+            opening = re.search(eco_pattern, file_parts[i])
+            url = opening.group(1)
+            split = url.split("/")[-2:]
+            split = re.sub("-", " ", split[1])
+            print("Game:", i, " Opening:", split)
+            opening_string = "[Opening " + "\"" + split + "\"" + "]\n" 
+            file_parts[i] = re.sub("\[ECOUrl.*\\n?", opening_string, file_parts[i]) 
+            file_parts[i] = re.sub("\[Event.*\\n?", "[Event \"Rated Classical Game\"]\n", file_parts[i])
+            # Remove extra whitespaces between move numbers, replace double tabs between lines with a newline
+            file_parts[i] = re.sub("  ", " ", file_parts[i])
+            file_parts[i] = re.sub("        ", "\n", file_parts[i])
+        except:
+            # Doesn't have an opening (in case of immediate draw), okay to pass
+            pass
+
+        # Replace double linebreaks with single linebreaks
+        file_parts[i] = file_parts[i].replace("\n\n", "\n")
+        i += 1
+
+    # Concatenate file parts
+    return "\n".join(file_parts)
+
 def clock_to_seconds(clock_time):
     hours, minutes, seconds = clock_time.split(":")
     total_seconds = int(hours) * 60 * 60 + int(minutes) * 60 + int(seconds)

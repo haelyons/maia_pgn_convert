@@ -8,11 +8,15 @@ LICHESS_INPUT_DIR = path.join(dirname, "lichess-to-chessbase", "input")
 LICHESS_OUTPUT_DIR = path.join(dirname, "lichess-to-chessbase", "output")
 CHESSBASE_INPUT_DIR = path.join(dirname, "chessbase-to-lichess", "input")
 CHESSBASE_OUTPUT_DIR = path.join(dirname, "chessbase-to-lichess", "output")
+CHESSCOM_INPUT_DIR = path.join(dirname, "chesscom-to-lichess", "input")
+CHESSCOM_OUTPUT_DIR = path.join(dirname, "chesscom-to-lichess", "output")
 
 lichess_input_files = utils.get_files_in_directory(LICHESS_INPUT_DIR, ".pgn")
 lichess_output_files = utils.get_files_in_directory(LICHESS_OUTPUT_DIR, ".pgn")
 chessbase_input_files = utils.get_files_in_directory(CHESSBASE_INPUT_DIR, ".pgn")
 chessbase_output_files = utils.get_files_in_directory(CHESSBASE_OUTPUT_DIR, ".pgn")
+chesscom_input_files = utils.get_files_in_directory(CHESSCOM_INPUT_DIR, ".pgn")
+chesscom_output_files = utils.get_files_in_directory(CHESSCOM_OUTPUT_DIR, ".pgn")
 
 # Get lichess todo list
 lichess_todo = []
@@ -25,6 +29,11 @@ chessbase_todo = []
 for filename in chessbase_input_files:
     if filename not in chessbase_output_files:
         chessbase_todo.append(filename)
+
+chesscom_todo = []
+for filename in chesscom_input_files:
+    if filename not in chesscom_output_files:
+        chesscom_todo.append(filename)
 
 print("-----")
 
@@ -49,3 +58,15 @@ if len(chessbase_todo) > 0:
         print(f"  {filename}...DONE")
 else:
     print("No new chessbase to lichess files.")
+
+print("-----")
+
+if len(chesscom_todo) > 0:
+    print(f"Converting {len(chesscom_todo)} chesscom to lichess file(s):")
+    for filename in chesscom_todo:
+        converted = utils.convert_chesscom_to_lichess(path.join(CHESSCOM_INPUT_DIR, filename))
+        with open(path.join(CHESSCOM_OUTPUT_DIR, filename), "w", encoding="utf-8") as f:
+            f.write(converted)
+        print(f"  {filename}...DONE")
+else:
+    print("No new chesscom to lichess files.")
